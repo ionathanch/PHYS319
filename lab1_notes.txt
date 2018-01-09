@@ -1,0 +1,60 @@
+One breadboard's layout resembles this (there are two):
+
+------------------  -------------------
+------------------  -------------------
+| | | | | | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | | | | | | | |
+
+| | | | | | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | | | | | | | |
+------------------  -------------------
+------------------  -------------------
+
+In V_OH, V_IH, V_OL, V_IL, 
+    - The O/I means it's the voltage output/input
+    - The H/L means it's a voltage HI/LO (or 1/0)
+Max and min are the maximum and minimum acceptable voltage for that input/output for HI/LO.
+
+e.g. A gate's acceptable voltages may look like the following:
+
++5V
+|||         max
+|||
+|||     V_IH
+|||
+|||         min
+ |
+ |
+ |
+ |
+ |
+|||         max
+|||     V_IL
+|||         min
+=0V
+
+The 4-digit 7-segment multiplexed display has seven inputs:
+    - D3 D2 D1 D0:  the input for a single digit, from 0x0 to 0xF
+    - A1 A0:        the input for selecting a digit, where 0b11 is leftmost and 0b00 is rightmost
+    - STR:          when this voltage goes from LO to HI, the value given by Dx is loaded into the digit selected by Ax
+
+A brief circuit diagramme:
+
+        Ohmm...
++5V ----VVVV------------------------------------------------------------|
+            |      __      |      __      |      __      |      __      |
+            |_____|  |     |_____|  |     |_____|  |     |_____|  |     |
+            ______|SW|     ______|SW|     ______|SW|     ______|SW|     |__     set manually
+            | GRD-|__|     | GRD-|__|     | GRD-|__|     | GRD-|__|     | O|    to select digit
+            |              |              |              |              |__|    |   |
+            |              |              |              |              |       |   |
+            D3             D2             D1             D0             STR     A1  A0
+            __             __             __             __ 
+           |__|           |__|           |__|           |__|
+           |__|           |__|           |__|           |__|
+
+            11             10             01             00                  == A1  A0
