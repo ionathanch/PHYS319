@@ -1,0 +1,11 @@
+Commands:
+    - Compile .asm to .hex: `naken430asm -o <name>.hex <name>.asm`
+    - Flash to microprocessor: `mspdebug rf2500`, then enter `prog <name>.hex`
+
+Note to self:
+    - microprocessor should be grounded; do NOT connect voltage to VCC!
+    - remember to connect +5V to 7-segment display
+    - connect all wires to microprocessor, then flash, then exit mspdebug!!
+      program will not run without exiting
+    - max value of a word is 2^16 = 65536, so halving blink rate by double dec count of 40000
+      means adding another decrementation of 40000 in another register
