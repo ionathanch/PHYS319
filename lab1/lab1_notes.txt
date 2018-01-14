@@ -42,19 +42,21 @@ The 4-digit 7-segment multiplexed display has seven inputs:
     - A1 A0:        the input for selecting a digit, where 0b11 is leftmost and 0b00 is rightmost
     - STR:          when this voltage goes from LO to HI, the value given by Dx is loaded into the digit selected by Ax
 
-A brief circuit diagramme:
+A brief circuit diagramme for wiring up the switches to the Dx inputs, the button to the strobe, and Ax:
 
         Ohmm...
-+5V ----VVVV------------------------------------------------------------|
++5V ____VVV_____________________________________________________________
             |      __      |      __      |      __      |      __      |
-            |_____|  |     |_____|  |     |_____|  |     |_____|  |     |
-            ______|SW|     ______|SW|     ______|SW|     ______|SW|     |__     set manually
-            | GRD-|__|     | GRD-|__|     | GRD-|__|     | GRD-|__|     | O|    to select digit
+            |_____|  |     |_____|  |     |_____|  |     |_____|  |     |       set manually with
+            ______|SW|     ______|SW|     ______|SW|     ______|SW|     |__     ground or power
+            | GRD_|__|     | GRD_|__|     | GRD_|__|     | GRD_|__|     | O|    to select digit
             |              |              |              |              |__|    |   |
             |              |              |              |              |       |   |
             D3             D2             D1             D0             STR     A1  A0
-            __             __             __             __ 
-           |__|           |__|           |__|           |__|
-           |__|           |__|           |__|           |__|
+         _____________________________________________________
+        |   __             __             __             __   |
+        |  |__|           |__|           |__|           |__|  |
+        |  |__|           |__|           |__|           |__|  |
+        |_____________________________________________________|
 
             11             10             01             00                  == A1  A0
