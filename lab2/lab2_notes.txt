@@ -9,3 +9,11 @@ Note to self:
       program will not run without exiting
     - max value of a word is 2^16 = 65536, so halving blink rate by double dec count of 40000
       means adding another decrementation of 40000 in another register
+
+off -> red -> green -> both -> off
+00 -> 01 -> 10 -> 11 -> 00
+0x00 -> 0x01 -> 0x40 -> 0x41 -> 0x00
+0000 0000 -> 0000 0001 -> 0100 0000 -> 0100 0001 -> 0000 0000
+        xor 0x01      xor 0x41    xor 0x01     xor 0x41
+                xor 0x40      xor 0x40      xor 0x40
+
