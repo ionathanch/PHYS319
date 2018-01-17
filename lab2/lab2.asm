@@ -1,6 +1,6 @@
 .include "msp430g2553.inc"
 
-org 0xc000
+    org 0xc000
 START:
     ; setup
     mov     #0x0400,        SP
@@ -8,8 +8,6 @@ START:
     mov.b   #11110111b,     &P1DIR
 
     ; set digits
-   ;mov.b   #DDDDxAASb      &P1OUT  ; DDDD (alternate from S = 0 to S = 1 to strobe)
-
     mov.b   #01100000b,     &P1OUT  ; xxx6
     mov.b   #01100001b,     &P1OUT  ; xxx6
 
@@ -25,5 +23,5 @@ START:
     ; disable
     bis.w   #CPUOFF,        SR
 
-org 0xfffe
+    org 0xfffe
     dw      START
