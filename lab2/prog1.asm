@@ -15,8 +15,8 @@ WAITER1:
     jnz     WAITER1         ; R9 not yet 0
 WAITER2:
     dec     R10
-    jnz     waiter2         ; R10 not yet 0
-    jmp     repeat          ; R9, R10 == 0; blink other LED
+    jnz     WAITER2         ; R10 not yet 0
+    jmp     REPEAT          ; R9, R10 == 0; blink other LED
 
     org 0xfffe
     dw      START           ; set reset vector to 'init' label

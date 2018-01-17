@@ -1,4 +1,4 @@
-#include "msp430g2553.inc"
+.include "msp430g2553.inc"
 
     org 0x0C000
 RESET:
