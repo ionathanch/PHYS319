@@ -16,8 +16,15 @@ PUSH:
     xor.b   R8,             R7          ; next LED state
     xor.b   #01000000b,     R8          ; 0x0041 -> 0x0001 -> 0x0041
     mov.b   R7,             &P1OUT      ; set LEDs to new state
-    bic.b   #00001000b,     &P1IFG      ; interrupt flag P1.3 set to 0
-    reti                                ; return from interrupt
+    mov.w   #0xFFFF,        R9          ; decrementing delay in R9
+LOOP:
+    dec     R9
+    nop                                 ; the more nops, the longer the delay
+    nop
+    nop
+    nop
+    jnz     LOOP
+    jmp     PUSH
 
     org 0xffe4
     dw PUSH                             ; interrupt from button goes here
