@@ -10,17 +10,15 @@
 	\maketitle
 	
 	\section{Lab 1}
+		The goal of this lab is to display the last four digits of my student number (4146) on the 4-digit 7-segment display.
+		
 		The breadboard's wiring layout resembles this (there are two):
 	\begin{verbatim}
 		------------------  -------------------
 		------------------  -------------------
 		| | | | | | | | | | | | | | | | | | | |
 		| | | | | | | | | | | | | | | | | | | |
-		| | | | | | | | | | | | | | | | | | | |
-		| | | | | | | | | | | | | | | | | | | |
 		
-		| | | | | | | | | | | | | | | | | | | |
-		| | | | | | | | | | | | | | | | | | | |
 		| | | | | | | | | | | | | | | | | | | |
 		| | | | | | | | | | | | | | | | | | | |
 		------------------  -------------------
@@ -34,19 +32,14 @@
 		Max and min are the maximum and minimum acceptable voltage for that input/output for HI/LO.
 	
 		For example, a gate's acceptable voltages may look like the following:
-	\newpage
 	\begin{verbatim}
 		+5V
 		|||         max
-		|||
 		|||     V_IH
-		|||
 		|||         min
-		|
-		|
-		|
-		|
-		|
+		 |
+		 |
+		 |
 		|||         max
 		|||     V_IL
 		|||         min
@@ -58,7 +51,9 @@
 		\item  A1 A0:      the input for selecting a digit, where \texttt{0b11} is leftmost and \texttt{0b00} is rightmost
 		\item STR:         when this voltage goes from LO to HI, the value given by Dx is loaded into the digit selected by Ax
 	\end{itemize}
-	Below is a rough circuit diagramme for wiring up the switches to the Dx inputs, the button to the strobe, and Ax:
+		Normally, since a single 7-segment display requires four inputs to display the $2^4 = 16$ different hex digits, 16 inputs would be required to display four digits. However, by using two inputs to select one of the $2^2 = 4$ digits to change and one input to indicate when the digit should be updated, we reduce the total number of inputs to just seven. The width of the latch switch pulse is 30 ns and there is a propagation delay from input to output of 50 ns.
+	
+		Below is a rough circuit diagramme for wiring up the switches to the Dx inputs, the button to the strobe, and Ax:
 	\begin{verbatim}
 		        Ohmm...
 		+5V ____VVV_____________________________________________________________
@@ -77,6 +72,7 @@
 		
 		            11             10             01             00                  == A1  A0
 	\end{verbatim}
+		\texttt{SW} indicates a switch, where the up position corresponds to HI and the down position to LO. The \texttt{O} encased in a rectangle connected to the strobe input is the button used to strobe from low to high to allow the display to accept the current inputs. To set the second-left digit to 6, for example, the switches must be in positions [down up up down] and A1 must be connected to power while A0 remains connected to ground. Then press the strobe button and the digit will appear.
 	
 	\newpage
 	\section{Lab 2}
@@ -86,7 +82,7 @@
 		\item \texttt{mspdebug} needs to be exited (with CTRL-D) for the program to run
 	\end{itemize}
 	\subsection{Student Number}
-		There needs to be a move to \texttt{P1OUT} for setting each digit. Since the strobe also needs to go from low to high to actually set the digit, there are actually two moves for each digit. Below is the full program for setting the display to \texttt{4146}. 
+		The goal of this activity is to display the last four digits of my student number (4146) using the microprocessor. The pins P1.7 to P1.0 excluding P1.3 have been connected to D3 through D0, then A1 and A0, then STR. Therefore, there needs to be a move to \texttt{P1OUT} for setting each digit. Since the strobe also needs to go from low to high to actually set the digit, there are actually two moves for each digit to alternate the strobe. Below is the full program for setting the display to \texttt{4146}. 
 	\begin{alltt}
 		.include "msp430g2553.inc"
 		
@@ -119,7 +115,7 @@
 	
 	\newpage
 	\subsection{Program 1}
-		Below is the full program for half-speed blinking annotated with comments. Making the lights blink twice as fast is simply halving the initial value set in \texttt{R9}, but making them blink twice as slow involves decrementing another register, since the doubled value is 80000 and will not fit in a two-byte word whose maximum value is 65536.
+		The goal of this activity is to understand the given program in assembly and to modify the blinking speed. The key features to note is that \texttt{xor 0100 0001} is used to alternate the lights from \texttt{0100~0000 -> 0000~0001}, and that the pauses between blinks is achieved by decrementing a register set to some value and waiting until that value becomes zero. Below is the full program for half-speed blinking annotated with comments. Making the lights blink twice as fast is simply halving the initial value set in \texttt{R9}, but making them blink twice as slow involves decrementing another register, since the doubled value is 80000 and will not fit in a two-byte word whose maximum value is 65536.
 	\begin{alltt}
 		.include "msp430g2553.inc"
 		
@@ -142,11 +138,11 @@
 		    jmp     REPEAT          ; R9, R10 == 0; blink other LED
 		
 		    org 0xfffe
-		    dw      START           ; set reset vector to 'init' label
+		    dw      START           ; reset interrupt goes to START
 	\end{alltt}
 	
 	\subsection{Program 2}
-		To make the LEDs cycle in the order
+		The goal of this activity is to understand the given program in assembly and to modify the behaviour from turning the LEDs on and off to turning alternating LEDs on, then both, then off. To make the LEDs cycle in the order
 		$$\indent \texttt{none -> red -> green -> both -> none},$$
 		the output to P1OUT needs to cycle through
 		$$\texttt{0000 0000 -> 0000 0001 -> 0100 0000 -> 0100 0001 -> 0000 0000}.$$ 
@@ -155,35 +151,72 @@
 		$$\texttt{0000 0000 -> 0000 0001} \indent and \indent \texttt{0100 0000 -> 0100 0001}$$
 		can be done by applying \texttt{xor 0000 0001}, while the second and fourth transitions
 		$$\texttt{0000 0001 -> 0100 0000} \indent and \indent \texttt{0100 0001 -> 0000 0000}$$
-		can be done by applying \texttt{xor 0100 0001}. Rather than using two registers to save these two constants, notice that in turn
+		can be done by applying \texttt{xor 0100 0001}. Rather than using two registers to save these two constants, notice that in turn the transitions
 		$$\texttt{0000 0001 -> 0100 0001 -> 0000 0001}$$
-		can be done by applying \texttt{xor 0100 0000}. Therefore we initialize a register, chosen here to be \texttt{R8}, to \texttt{0100~0001} (since the LEDs begin in the both-on state), and after we have applied \texttt{xor R8} on the output to obtain the next output, \texttt{0000~0000}, we apply \texttt{xor 0100~0000} on \texttt{R8} to get the next value of \texttt{R8}, \texttt{0000~0001}, that should be \texttt{xor}ed with the next output, and so forth. Below is the full program annotated with comments. 
+		can be done by applying \texttt{xor 0100 0000}. Therefore we initialize a register, chosen here to be \texttt{R8}, to \texttt{0100~0001} (since the LEDs begin in the both-on state), and after we have applied \texttt{xor R8} on the output to obtain the next output, \texttt{0000~0000}, we apply \texttt{xor 0100~0000} on \texttt{R8} to get the next value of \texttt{R8}, \texttt{0000~0001}, that should be \texttt{xor}ed with the next output, and so forth. Below is the full program annotated with comments. Note that although registers are a word long, we only need the last byte, so all of the \texttt{mov, xor} operations can be for just the byte.
 		
 	\begin{alltt}
-		#include "msp430g2553.inc"
+		.include "msp430g2553.inc"
 		
-			org 0x0C000
+		    org 0x0C000
 		RESET:
 		    mov.w   #0x400,         SP
 		    mov.w   #WDTPW|WDTHOLD, \&WDTCTL
 		    mov.b   #11110111b,     \&P1DIR      ; all pins outputs except P1.3
-		    mov.b   #00001000b,     \&P1REN      ; enable resistor for P1.3
+		    mov.b   #00001000b,     \&P1REN      ; enable resistor pull for P1.3
 		    mov.b   #00001000b,     \&P1IE       ; P1.3 set as an interrupt
-		    mov.w   #0x0049,        R7          ; R7 = 0000 0000 0100 1001
+		    mov.b   #00001000b,     R7          ; set LEDs off and P1.3 pullup
 		    mov.b   R7,             \&P1OUT      ; LED1, LED2 on
-		    mov.b   #0x0041,        R8          ; value to xor with R7
+		    mov.b   #00000001b,     R8          ; initial value to xor with R7
 		    EINT                                ; enable interrupts
 		    bis.w   #CPUOFF,        SR
 		PUSH:
-		    xor.w   R8,             R7          ; next LED state
-		    xor.w   #0x0040,        R8          ; 0x0041 -> 0x0001 -> 0x0041
+		    xor.b   R8,             R7          ; next LED state
+		    xor.b   #01000000b,     R8          ; 0x0041 -> 0x0001 -> 0x0041
 		    mov.b   R7,             \&P1OUT      ; set LEDs to new state
 		    bic.b   #00001000b,     \&P1IFG      ; interrupt flag P1.3 set to 0
 		    reti                                ; return from interrupt
-		
+		    
 		    org 0xffe4
-		    dw PUSH                             ; interrupt from P1.3 button goes here
+		    dw PUSH                             ; interrupt from button goes here
+		    
+		    org 0xfffe
+		    dw RESET                            ; interrupt from reset button goes here
+	\end{alltt}
+		A problem I was encountering was that my P1.3 button seemed to be unpredictably sending multiple signals sometimes, which gave me difficulty in checking if the LED changing behaviour I had programmed was doing what I expected it to do. Therefore, I wrote a loop at the end of \texttt{PUSH} to keep on executing the LED changes (with a delay), so that I wouldn't have to press the faulty button to change the lights. Below is the full program for this modification.
 		
+	\begin{alltt}
+		.include "msp430g2553.inc"
+		
+		    org 0x0C000
+		RESET:
+		    mov.w   #0x400,         SP
+		    mov.w   #WDTPW|WDTHOLD, \&WDTCTL
+		    mov.b   #11110111b,     \&P1DIR      ; all pins outputs except P1.3
+		    mov.b   #00001000b,     \&P1REN      ; enable resistor pull for P1.3
+		    mov.b   #00001000b,     \&P1IE       ; P1.3 set as an interrupt
+		    mov.b   #00001000b,     R7          ; set LEDs off and P1.3 pullup
+		    mov.b   R7,             \&P1OUT      ; LED1, LED2 on
+		    mov.b   #00000001b,     R8          ; initial value to xor with R7
+		    EINT                                ; enable interrupts
+		    bis.w   #CPUOFF,        SR
+		PUSH:
+		    xor.b   R8,             R7          ; next LED state
+		    xor.b   #01000000b,     R8          ; 0x0041 -> 0x0001 -> 0x0041
+		    mov.b   R7,             \&P1OUT      ; set LEDs to new state
+		    mov.w   #0xFFFF,        R9          ; decrementing delay in R9
+		LOOP:
+		    dec     R9
+		    nop                                 ; the more nops, the longer the delay
+		    nop
+		    nop
+		    nop
+		    jnz     LOOP
+		    jmp     PUSH
+		    
+		    org 0xffe4
+		    dw PUSH                             ; interrupt from button goes here
+		    
 		    org 0xfffe
 		    dw RESET                            ; interrupt from reset button goes here
 	\end{alltt}
