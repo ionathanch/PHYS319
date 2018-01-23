@@ -1,0 +1,5 @@
+**/*.elf
+**/*.log
+**/*.synctex.gz
+**/*.aux
+**/.vscode
