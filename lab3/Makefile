@@ -17,15 +17,19 @@ all: prog1 prog2 adc pwm
 
 prog1: prog1.c
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o prog1.elf
+	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o prog1.asm
 prog2: prog2.c
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o prog2.elf
+	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o prog2.asm
 adc:   adc.c
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o adc.elf
+	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o adc.asm
 pwm:   pwm.c
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o pwm.elf
+	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o pwm.asm
 
 debug: all
 	$(GDB) ${EXEC}
 
 clean: 
-	rm *.elf
+	rm prog1.elf prog2.elf adc.elf pwm.elf prog1.asm prog2.asm adc.asm pwm.asm

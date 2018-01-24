@@ -11,13 +11,16 @@
  */
 #include <msp430.h>
 
+volatile unsigned char stateChanger;
+
 void main(void) {
     WDTCTL = WDTPW + WDTHOLD;   // Stop watchdog timer
     P1DIR  = 0xF7;              // C does not have a convenient way of
                                 // representing numbers in binary; use hex instead
-    P1OUT  = 0x49;
+    P1OUT  = 0x08;              // LEDs off
     P1REN  = 0x08;              // enable resistor
     P1IE   = 0x08;              // Enable input at P1.3 as an interrupt
+    stateChanger = 0x1;
 
     _BIS_SR (LPM4_bits + GIE);  // Turn on interrupts and go into the lowest
                                 // power mode (the program stops here)
@@ -27,6 +30,7 @@ void main(void) {
 
 // Port 1 interrupt service routine
 void __attribute__ ((interrupt(PORT1_VECTOR))) PORT1_ISR(void) {
-    P1OUT ^= 0x41;              // toggle the LEDS
+    P1OUT ^= stateChanger;      // toggle the LEDS
+    stateChanger ^= 0x40;       // 0x01 -> 0x40 -> 0x01
     P1IFG &= ~0x08;             // Clear P1.3 IFG. If you don't, it just happens again.
 }
