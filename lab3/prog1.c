@@ -23,10 +23,10 @@ void main(void) {
     P1OUT = 0x01;                   // Set the output
     
     while (1) {                     // Loop forever
-        for (unsigned char i = 0; i < 2; i++) {
+        for (volatile unsigned char i = 0; i < 2; i++) {
             count = 60000;
             while (count != 0) {
-                count--;                // decrement
+                count--;            // decrement
             }
         }
         P1OUT = P1OUT ^ 0x41;       // bitwise xor the output with 0x41

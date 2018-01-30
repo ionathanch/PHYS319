@@ -32,15 +32,18 @@ void main(void) {
     ADC10CTL0 = ADC10SHT_2 + ADC10ON;   // ADC10ON
     ADC10CTL1 = INCH_1;                 // input A1
     ADC10AE0 |= 0x02;                   // PA.1 ADC option select
-    P1DIR    |= 0x01;                   // Set P1.0 to output direction
+    P1DIR    |= 0x45;                   // Set P1.0 to output direction
 
     while (1) {
         ADC10CTL0 |= ENC + ADC10SC;     // Sampling and conversion start
         while (ADC10CTL1 &ADC10BUSY);   // ADC10BUSY?
-        if (ADC10MEM < 0x2FF) {
-            P1OUT &= ~0x01;             // Clear P1.0 LED off
+        P1OUT &= ~0x45;
+        if (ADC10MEM > 0x2FF) {
+            P1OUT |= 0x01;
+        } else if (ADC10MEM < 0x133) {
+            P1OUT |= 0x40;
         } else {
-            P1OUT |= 0x01;              // Set P1.0 LED on
+            P1OUT |= 0x04;
         }
         unsigned i;
         for (i = 0xFFFF; i > 0; i--);   // Delay

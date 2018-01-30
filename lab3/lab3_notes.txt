@@ -1,0 +1,6 @@
+For a 3.3 V CMOS input, 
+    - V_IH > 2 V
+    - V_IL < 0.8 V
+Assuming the ADC scale is linear in voltage and is zero at 0V, 
+    - 2V    => 0x2FF (given) = 767
+    - 0.8 V => 0.8 / 2 * 767 = 307 = 0x133

@@ -27,7 +27,7 @@ main:
 	.loc 1 34 0
 	BIS.B	#2, &ADC10AE0
 	.loc 1 35 0
-	BIS.B	#1, &P1DIR
+	BIS.B	#69, &P1DIR
 .L2:
 .LBB2:
 	.loc 1 38 0
@@ -36,15 +36,25 @@ main:
 	.loc 1 39 0 discriminator 1
 	BIT.W	#1, &ADC10CTL1 { JNE	.L3
 	.loc 1 40 0
-	MOV.W	&ADC10MEM, R12
-	MOV.W	#766, R13
-	CMP.W	R12, R13 { JLO	.L4
+	AND.B	#-70, &P1OUT
 	.loc 1 41 0
-	BIC.B	#1, &P1OUT
+	MOV.W	&ADC10MEM, R12
+	MOV.W	#767, R13
+	CMP.W	R12, R13 { JHS	.L4
+	.loc 1 42 0
+	BIS.B	#1, &P1OUT
 	BR	#.L2
 .L4:
 	.loc 1 43 0
-	BIS.B	#1, &P1OUT
+	MOV.W	&ADC10MEM, R12
+	MOV.W	#306, R13
+	CMP.W	R12, R13 { JLO	.L6
+	.loc 1 44 0
+	BIS.B	#64, &P1OUT
+	BR	#.L2
+.L6:
+	.loc 1 46 0
+	BIS.B	#4, &P1OUT
 	BR	#.L2
 .LBE2:
 .LFE0:
@@ -607,7 +617,7 @@ main:
 	.uleb128 0x9
 	.string	"i"
 	.byte	0x1
-	.byte	0x2d
+	.byte	0x30
 	.4byte	0x25
 	.byte	0
 	.byte	0

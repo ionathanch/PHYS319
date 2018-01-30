@@ -10,14 +10,14 @@ main:
 	.loc 1 18 0
 ; start of function
 ; framesize_regs:     0
-; framesize_locals:   2
+; framesize_locals:   4
 ; framesize_outgoing: 0
-; framesize:          2
+; framesize:          4
 ; elim ap -> fp       2
-; elim fp -> sp       2
+; elim fp -> sp       4
 ; saved regs:(none)
 	; start of prologue
-	SUB.W	#2, R1
+	SUB.W	#4, R1
 .LCFI0:
 	; end of prologue
 	.loc 1 21 0
@@ -27,36 +27,39 @@ main:
 	.loc 1 23 0
 	MOV.B	#1, &P1OUT
 .LBB2:
+	.loc 1 26 0
+	MOV.B	#0, R13
 	.loc 1 27 0
 	MOV.W	#-5536, R12
 .L6:
-.LVL0:
-	MOV.W	R12, @R1
+	.loc 1 26 0
+	MOV.B	R13, 1(R1)
+.L2:
+	.loc 1 26 0 is_stmt 0 discriminator 1
+	MOV.B	1(R1), R14
+	MOV.B	#1, R15
+	CMP.B	R14, R15 { JHS	.L5
+.LBE2:
+	.loc 1 32 0 is_stmt 1
+	XOR.B	#65, &P1OUT
+	.loc 1 26 0
+	BR	#.L6
+.L5:
+.LBB3:
+	.loc 1 27 0
+	MOV.W	R12, 2(R1)
 .L3:
 	.loc 1 28 0
-	MOV.W	@R1, R13
-	CMP.W	#0, R13 { JEQ	.L2
-	.loc 1 29 0
-	ADD.W	#-1, @R1
-	BR	#.L3
-.L2:
-.LVL1:
-	.loc 1 27 0
-	MOV.W	R12, @R1
-.L5:
-	.loc 1 28 0
-	MOV.W	@R1, R13
-	CMP.W	#0, R13 { JEQ	.L4
-	.loc 1 29 0
-	ADD.W	#-1, @R1
-	BR	#.L5
+	MOV.W	2(R1), R14
+	CMP.W	#0, R14 { JNE	.L4
+	.loc 1 26 0 discriminator 2
+	ADD.B	#1, 1(R1)
+	BR	#.L2
 .L4:
-.LVL2:
-.LBE2:
-	.loc 1 32 0 discriminator 1
-	XOR.B	#65, &P1OUT
-	.loc 1 26 0 discriminator 1
-	BR	#.L6
+	.loc 1 29 0
+	ADD.W	#-1, 2(R1)
+	BR	#.L3
+.LBE3:
 .LFE0:
 	.size	main, .-main
 	.section	.debug_frame,"",@progbits
@@ -85,7 +88,7 @@ main:
 	.byte	0x4
 	.4byte	.LCFI0-.LFB0
 	.byte	0xe
-	.uleb128 0x4
+	.uleb128 0x6
 	.balign 4
 .LEFDE0:
 .text
@@ -93,7 +96,7 @@ main:
 	.file 2 "/home/jonathan/ti/msp430_gcc/include/msp430g2553.h"
 	.section	.debug_info,"",@progbits
 .Ldebug_info0:
-	.4byte	0x4fe
+	.4byte	0x4f9
 	.2byte	0x4
 	.4byte	.Ldebug_abbrev0
 	.byte	0x4
@@ -624,14 +627,15 @@ main:
 	.byte	0x91
 	.sleb128 -4
 	.uleb128 0x9
-	.4byte	.LBB2
-	.4byte	.LBE2-.LBB2
+	.4byte	.Ldebug_ranges0+0
 	.uleb128 0xa
 	.string	"i"
 	.byte	0x1
 	.byte	0x1a
-	.4byte	0x3c
-	.4byte	.LLST0
+	.4byte	0x43
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -5
 	.byte	0
 	.byte	0
 	.byte	0
@@ -766,10 +770,8 @@ main:
 	.uleb128 0x9
 	.uleb128 0xb
 	.byte	0x1
-	.uleb128 0x11
-	.uleb128 0x1
-	.uleb128 0x12
-	.uleb128 0x6
+	.uleb128 0x55
+	.uleb128 0x17
 	.byte	0
 	.byte	0
 	.uleb128 0xa
@@ -784,30 +786,10 @@ main:
 	.uleb128 0x49
 	.uleb128 0x13
 	.uleb128 0x2
-	.uleb128 0x17
+	.uleb128 0x18
 	.byte	0
 	.byte	0
 	.byte	0
-	.section	.debug_loc,"",@progbits
-.Ldebug_loc0:
-.LLST0:
-	.4byte	.LVL0-.Ltext0
-	.4byte	.LVL1-.Ltext0
-	.2byte	0x2
-	.byte	0x30
-	.byte	0x9f
-	.4byte	.LVL1-.Ltext0
-	.4byte	.LVL2-.Ltext0
-	.2byte	0x2
-	.byte	0x31
-	.byte	0x9f
-	.4byte	.LVL2-.Ltext0
-	.4byte	.LFE0-.Ltext0
-	.2byte	0x2
-	.byte	0x32
-	.byte	0x9f
-	.4byte	0
-	.4byte	0
 	.section	.debug_aranges,"",@progbits
 	.4byte	0x1c
 	.2byte	0x2
@@ -818,6 +800,14 @@ main:
 	.2byte	0
 	.4byte	.Ltext0
 	.4byte	.Letext0-.Ltext0
+	.4byte	0
+	.4byte	0
+	.section	.debug_ranges,"",@progbits
+.Ldebug_ranges0:
+	.4byte	.LBB2-.Ltext0
+	.4byte	.LBE2-.Ltext0
+	.4byte	.LBB3-.Ltext0
+	.4byte	.LBE3-.Ltext0
 	.4byte	0
 	.4byte	0
 	.section	.debug_line,"",@progbits

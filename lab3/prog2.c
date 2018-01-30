@@ -31,6 +31,6 @@ void main(void) {
 // Port 1 interrupt service routine
 void __attribute__ ((interrupt(PORT1_VECTOR))) PORT1_ISR(void) {
     P1OUT ^= stateChanger;      // toggle the LEDS
-    stateChanger ^= 0x40;       // 0x01 -> 0x40 -> 0x01
+    stateChanger ^= 0x40;       // 0x01 -> 0x41 -> 0x01
     P1IFG &= ~0x08;             // Clear P1.3 IFG. If you don't, it just happens again.
 }
