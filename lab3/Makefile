@@ -13,7 +13,7 @@ GDB     = $(GCC_DIR)/msp430-elf-gdb
 CFLAGS = -I $(SUPPORT_FILE_DIRECTORY) -mmcu=$(DEVICE) -Os -g
 LFLAGS = -L $(SUPPORT_FILE_DIRECTORY) -T $(DEVICE).ld
 
-all: prog1 prog2 adc pwm
+all: prog1 prog2 adc pwm dimmer tones
 
 prog1: prog1.c
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o prog1.elf
@@ -27,6 +27,12 @@ adc:   adc.c
 pwm:   pwm.c
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o pwm.elf
 	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o pwm.asm
+dimmer:   dimmer.c
+	$(CC) $(CFLAGS) $(LFLAGS) $? -o dimmer.elf
+	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o dimmer.asm
+tones:   tones.c
+	$(CC) $(CFLAGS) $(LFLAGS) $? -o tones.elf
+	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o tones.asm
 
 debug: all
 	$(GDB) ${EXEC}
