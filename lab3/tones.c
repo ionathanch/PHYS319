@@ -33,7 +33,7 @@ int hbd_lengths[30] = {
     3, 3, 3, 
     6, 1, 1, 1, 
     3, 3, 3, 
-    3, 4, 1, 1, 1, 
+    3, 6, 1, 1, 1, 
     3, 3, 3, 
     6, 3
 };
@@ -89,37 +89,39 @@ unsigned char acc(int note) {
     }
 }
 
+void play(int note) {
+    if (note != 0) {
+        CCR0 = note;
+        CCR1 = 100;
+    } else {
+        CCR1 = 0;
+    }
+}
+
+void display(unsigned char out) {
+    P1OUT  = out;
+    P1OUT |= 0x08;
+}
+
 void sing(int* song, int* song_lengths, int length) {
     while (1) {
         for (int i = 0; i < length; i++) {
             int note = song[i];
-            CCR0   =  note != 0  ? note : CCR0;
-            CCR1   = (note != 0) * 100;
-
-            P1OUT  = show(note);
-            P1OUT |= 0x08;
-            P1OUT  = acc(note);
-            P1OUT |= 0x08;
-
+            play(note);
+            display(show(note));
+            display(acc(note));
             for (volatile unsigned int length = song_lengths[i]; length > 0; length--) {
-                for (volatile unsigned int i = 0x4FFF; i > 0; i--);
+                for (volatile unsigned int i = 0x3000; i > 0; i--);
             }
         }
     }
 }
 
 void clear() {
-    P1OUT = 0x00;
-    P1OUT = 0x08;
-    
-    P1OUT = 0x01;
-    P1OUT = 0x09;
-    
-    P1OUT = 0x02;
-    P1OUT = 0x0a;
-
-    P1OUT = 0x03;
-    P1OUT = 0x0b;
+    for (unsigned char i = 0; i < 4; i++) {
+        P1OUT = i;
+        P1OUT = i | 0x08;
+    }
 }
 
 void main(void) {
