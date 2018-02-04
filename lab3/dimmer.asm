@@ -49,25 +49,23 @@ main:
 	.loc 1 14 0
 	MOV.W	#224, &TA0CCTL1
 	.loc 1 15 0
-	MOV.W	#250, &TA0CCR1
-	.loc 1 16 0
 	MOV.W	#528, &TA0CTL
-	.loc 1 21 0
+	.loc 1 20 0
 	MOV.W	#__mspabi_mpyi, R10
 	MOV.W	#1000, R8
 	MOV.W	#__mspabi_divu, R9
 	MOV.W	#1023, R7
 .LBB2:
-	.loc 1 22 0
+	.loc 1 21 0
 	MOV.W	#-1, R6
 .L5:
 .LBE2:
-	.loc 1 19 0
+	.loc 1 18 0
 	BIS.W	#3, &ADC10CTL0
 .L2:
-	.loc 1 20 0 discriminator 1
+	.loc 1 19 0 discriminator 1
 	BIT.W	#1, &ADC10CTL1 { JNE	.L2
-	.loc 1 21 0
+	.loc 1 20 0
 	MOV.W	R8, R13
 	MOV.W	&ADC10MEM, R12
 	CALL	R10
@@ -75,15 +73,16 @@ main:
 	MOV.W	R7, R13
 	CALL	R9
 .LVL1:
+	ADD.W	#1, R12
 	MOV.W	R12, &TA0CCR1
 .LBB3:
-	.loc 1 22 0
+	.loc 1 21 0
 	MOV.W	R6, @R1
 .L3:
-	.loc 1 22 0 is_stmt 0 discriminator 1
+	.loc 1 21 0 is_stmt 0 discriminator 1
 	MOV.W	@R1, R12
 	CMP.W	#0, R12 { JEQ	.L5
-	.loc 1 22 0 discriminator 3
+	.loc 1 21 0 discriminator 3
 	ADD.W	#-1, @R1
 	BR	#.L3
 .LBE3:
@@ -680,7 +679,7 @@ main:
 	.uleb128 0x9
 	.string	"i"
 	.byte	0x1
-	.byte	0x16
+	.byte	0x15
 	.4byte	0x2c
 	.uleb128 0x2
 	.byte	0x91

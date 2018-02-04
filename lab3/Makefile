@@ -38,4 +38,5 @@ debug: all
 	$(GDB) ${EXEC}
 
 clean: 
-	rm prog1.elf prog2.elf adc.elf pwm.elf prog1.asm prog2.asm adc.asm pwm.asm
+	rm prog1.elf prog1.asm prog2.elf prog2.asm adc.elf adc.asm \
+		pwm.elf pwm.asm dimmer.elf dimmer.asm tones.elf tones.asm

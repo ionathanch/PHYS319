@@ -36,7 +36,7 @@ void main(void) {
 
     while (1) {
         ADC10CTL0 |= ENC + ADC10SC;     // Sampling and conversion start
-        while (ADC10CTL1 &ADC10BUSY);   // ADC10BUSY?
+        while (ADC10CTL1 & ADC10BUSY);  // ADC10BUSY?
         P1OUT &= ~0x45;
         if (ADC10MEM > 0x2FF) {
             P1OUT |= 0x01;
