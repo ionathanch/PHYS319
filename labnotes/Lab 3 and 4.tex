@@ -327,7 +327,7 @@ void sing(int* song, int* song_lengths, int length) {
         for (int i = 0; i < length; i++) {
             int note = song[i];
             play(note);            // set pitch
-            display(show(note);    // show note
+            display(show(note));   // show note
             display(acc(note));    // show if flat
             // set delay by length of note
             for (volatile unsigned int length = song_lengths[i]; length > 0; length--) {
