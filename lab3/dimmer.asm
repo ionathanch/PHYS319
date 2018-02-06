@@ -73,7 +73,6 @@ main:
 	MOV.W	R7, R13
 	CALL	R9
 .LVL1:
-	ADD.W	#1, R12
 	MOV.W	R12, &TA0CCR1
 .LBB3:
 	.loc 1 21 0
