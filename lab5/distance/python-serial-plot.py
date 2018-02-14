@@ -57,7 +57,7 @@ times=np.arange(0,50,1.0) # 50 from 0 to 49.
 
 #create a plot:
 fig = Figure()
-ax = fig.add_subplot(111,xlabel='Time Step',ylabel='Temp (deg F)')
+ax = fig.add_subplot(111,xlabel='Time Step',ylabel='Distance (cm)')
 ax.set_ylim(0,255) # set limits of y axis.
 
 canvas = FigureCanvas(fig) #put the plot onto a canvas
@@ -72,7 +72,7 @@ win.set_title("ready to receive data");
 
 line, = ax.plot(times,yvals)
 #open a data file for the output
-outFile = open("time_and_temp.txt","w")
+outFile = open("time_and_dist.txt","w")
 start_time = time()
 ser.flushInput()
 
@@ -84,7 +84,7 @@ while(1): #loop forever
         outFile.write(str(time()-start_time)+" "+str(yvals[49])+"\n") #write to file
         line.set_ydata(yvals) # draw the line
         fig.canvas.draw() # update the canvas
-        win.set_title("Temp: "+str(yvals[49])+" deg F")
+        win.set_title("Distance: "+str(yvals[49])+" cm")
     while gtk.events_pending():	#makes sure the GUI updates
         gtk.main_iteration()
 #    sleep(.05) # don't eat the cpu. This delay limits the data rate to ~ 200 samples/s
