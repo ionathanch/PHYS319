@@ -14,5 +14,8 @@ LFLAGS = -L $(SUPPORT_FILE_DIRECTORY) -T $(DEVICE).ld
 all: ${OBJECTS}
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o main.elf
 
+main: main.c
+	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o main.asm
+
 debug: all
 	$(GDB) main.elf
