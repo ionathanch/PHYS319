@@ -6,8 +6,7 @@
 #define   TRIG      BIT4
 #define   ECHO      BIT6
 
-#define   SOUND     34029       // speed of sound in cm/s
-#define   US        1000000     // microseconds in a second
+#define   CM        58
 
 unsigned int TXByte;
 
@@ -33,8 +32,8 @@ void main(void) {
   P1DIR    &= ~ECHO;            // set echo input
   P1IE     |=  ECHO;            // use echo input as interrupt
 
-  TACTL     = TACLR;                    // reset clock
-  TACTL     = TASSEL_2 | ID_1 | MC_2;   // set SMCLK timer to count up at 1 MHz
+  TACTL     = TACLR;            // reset clock
+  TACTL     = TASSEL_2 | MC_2;  // set SMCLK timer to count up at 1 MHz
   __enable_interrupt();
 
   while (1) {
@@ -48,7 +47,7 @@ void main(void) {
     P1IES |=  ECHO;                     // interrupt on high to low
     __bis_SR_register(LPM0_bits + GIE);
     
-    TXByte = TAR * SOUND / US;          // distance in cm
+    TXByte = TAR / CM;                  // distance in cm
     TXByte = (TXByte <= 0xFF) * TXByte; // set to 0 if beyond range
     while (!(IFG2 & UCA0TXIFG));        // wait for TX buffer to be ready for new data
     UCA0TXBUF = TXByte;           
