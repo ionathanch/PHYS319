@@ -6,6 +6,7 @@
 \usepackage{minted}
 \usepackage{siunitx}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \begin{document}
 	\maketitle
@@ -97,4 +98,11 @@
 	ax.set_ylim(0,255) # set limits of y axis.
 	...
 	\end{minted}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{ranger-measurement}
+	\end{figure}
+
+	The above chart shows the deviation from the actual distance as measured with the ultrasonic ranger by pointing it at a perpendicular wall certain distances away. The measurements for distances under $\SI{3}{cm}$ are all exactly $\SI{3}{cm}$, which explains the linearly decreasing distances in the lower end; as mentioned previously, the ranger cannot measure distances any closer. As distance increases, the measurement becomes less accurate: this may be because the father the pulse has to travel, the more spread out it becomes, and it bounces off parts of the wall not exactly perpendicular but slightly off centre. This explanation is further supported by the fact that when using a portable smaller surface in lieu of a wall, as I had originally done, at certain distances the surface wasn't large enough to yield a meaningful result.
 \end{document}
