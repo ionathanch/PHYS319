@@ -2,6 +2,7 @@
 
 #define   TXD       BIT2
 #define   RXD       BIT1
+#define   LED       BIT0
 
 #define   US        1000000
 
@@ -22,10 +23,8 @@ void main(void) {
   UCA0MCTL  = UCBRS0;           // Modulation UCBRSx = 1
   UCA0CTL1 &= ~UCSWRST;         // Initialize USCI state machine
 
-  P1DIR    |= TXD;
+  P1DIR    |= TXD | LED;
   P1OUT    |= TXD;
-
-  P1DIR |= BIT0;
 
   TACTL     = TACLR;            // reset clock
   TACTL     = TASSEL_2 | MC_2;  // set SMCLK timer to count up at 1 MHz
@@ -33,15 +32,12 @@ void main(void) {
   
   while (1) {
     TAR = 0;
-    P1OUT ^= BIT0;
+    P1OUT ^= LED;
     __enable_interrupt();
     __bis_SR_register(LPM0_bits + GIE);
-    TXByte = US/TACCR0;                 // frequency in Hz
-    
-    TXByte /= 2;                        // frequency won't fit in a byte
+    TXByte = US/TACCR0;                 // frequency in Hertz
     while (!(IFG2 & UCA0TXIFG));        // wait for TX buffer to be ready for new data
-    UCA0TXBUF = TXByte;           
-
+    UCA0TXBUF = (TXByte - 110)/2;       // send range of 110 Hz (A below low C) to 621 Hz (D above high C)
     __delay_cycles(100000);             // wait >10 ms before measuring again
   }
 }
