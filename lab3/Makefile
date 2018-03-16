@@ -33,13 +33,10 @@ dimmer:   dimmer.c
 tones:   tones.c
 	$(CC) $(CFLAGS) $(LFLAGS) $? -o tones.elf
 	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o tones.asm
-piano:   piano.c
-	$(CC) $(CFLAGS) $(LFLAGS) $? -o piano.elf
-	$(CC) $(CFLAGS) $(LFLAGS) $? -S -o piano.asm
 
 debug: all
 	$(GDB) ${EXEC}
 
 clean: 
 	rm prog1.elf prog1.asm prog2.elf prog2.asm adc.elf adc.asm \
-		pwm.elf pwm.asm dimmer.elf dimmer.asm tones.elf tones.asm piano.elf piano.asm
+		pwm.elf pwm.asm dimmer.elf dimmer.asm tones.elf tones.asm

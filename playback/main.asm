@@ -1,4 +1,4 @@
-	.file	"piano.c"
+	.file	"main.c"
 .text
 .Ltext0:
 	.balign 2
@@ -6,7 +6,7 @@
 	.type	play, @function
 play:
 .LFB0:
-	.file 1 "piano.c"
+	.file 1 "main.c"
 	.loc 1 44 0
 ; start of function
 ; framesize_regs:     0
@@ -267,16 +267,16 @@ main:
 	.loc 1 89 0
 	MOV.W	#16, &TA0CCTL0
 	.loc 1 91 0
- ; 91 "piano.c" 1
+ ; 91 "main.c" 1
 	eint { nop
  ; 0 "" 2
-	.loc 1 96 0
+	.loc 1 95 0
 	MOV.W	R1, R13
 	ADD.W	#128, R13
 	MOV.W	R1, R12
 	CALL	#record
 .LVL19:
-	.loc 1 97 0
+	.loc 1 96 0
 	MOV.W	R12, R14
 	MOV.W	R1, R13
 	ADD.W	#128, R13
@@ -284,7 +284,7 @@ main:
 .LVL20:
 	CALL	#sing
 .LVL21:
-	.loc 1 98 0
+	.loc 1 97 0
 	; start of epilogue
 	.refsym	__crt0_call_exit
 	ADD.W	#256, R1
@@ -299,7 +299,7 @@ main:
 	.type	timer0_a0_isr, @function
 timer0_a0_isr:
 .LFB4:
-	.loc 1 106 0
+	.loc 1 105 0
 ; start of function
 ; attributes: interrupt 
 ; framesize_regs:     4
@@ -315,23 +315,23 @@ timer0_a0_isr:
 	PUSH	R12
 .LCFI15:
 	; end of prologue
-	.loc 1 107 0
+	.loc 1 106 0
 	MOV.W	&us, R12
 	MOV.W	#-5536, R13 { SUB.W	R12, R13
 .LVL22:
-	.loc 1 108 0
+	.loc 1 107 0
 	MOV.W	&TA0CCR0, R12
 	CMP.W	R12, R13 { JHS	.L15
-	.loc 1 109 0
+	.loc 1 108 0
 	ADD.W	#6, &cs
-	.loc 1 110 0
+	.loc 1 109 0
 	MOV.W	&TA0CCR0, R12
 	SUB.W	R13, R12
 	MOV.W	R12, &us
 .L16:
-	.loc 1 114 0
+	.loc 1 113 0
 	BIC.W	#1, &TA0CCTL0
-	.loc 1 115 0
+	.loc 1 114 0
 	; start of epilogue
 	POP	R12
 	POP	R13
@@ -339,7 +339,7 @@ timer0_a0_isr:
 	RETI
 .LVL24:
 .L15:
-	.loc 1 112 0
+	.loc 1 111 0
 	ADD.W	&TA0CCR0, &us
 	BR	#.L16
 .LFE4:
@@ -352,7 +352,7 @@ timer0_a0_isr:
 	.type	port1_isr, @function
 port1_isr:
 .LFB5:
-	.loc 1 123 0
+	.loc 1 122 0
 ; start of function
 ; attributes: interrupt 
 ; framesize_regs:     0
@@ -364,15 +364,15 @@ port1_isr:
 ; saved regs:(none)
 	; start of prologue
 	; end of prologue
-	.loc 1 124 0
+	.loc 1 123 0
 	MOV.B	#0, &recording
-	.loc 1 125 0
+	.loc 1 124 0
 	XOR.B	#1, &P1OUT
-	.loc 1 126 0
+	.loc 1 125 0
 	BIC.B	#8, &P1IFG
-	.loc 1 127 0
+	.loc 1 126 0
 	BIC.B	#8, &P1IE
-	.loc 1 128 0
+	.loc 1 127 0
 	; start of epilogue
 	RETI
 .LFE5:
@@ -2205,7 +2205,7 @@ recording:
 	.uleb128 0x1e
 	.4byte	.LASF234
 	.byte	0x1
-	.byte	0x79
+	.byte	0x78
 	.4byte	.LFB5
 	.4byte	.LFE5-.LFB5
 	.uleb128 0x1
@@ -2213,7 +2213,7 @@ recording:
 	.uleb128 0x1f
 	.4byte	.LASF223
 	.byte	0x1
-	.byte	0x68
+	.byte	0x67
 	.4byte	.LFB4
 	.4byte	.LFE4-.LFB4
 	.uleb128 0x1
@@ -2222,7 +2222,7 @@ recording:
 	.uleb128 0x20
 	.4byte	.LASF225
 	.byte	0x1
-	.byte	0x6b
+	.byte	0x6a
 	.4byte	0x25
 	.4byte	.LLST10
 	.byte	0
@@ -2238,7 +2238,7 @@ recording:
 	.uleb128 0x21
 	.string	"rec"
 	.byte	0x1
-	.byte	0x5e
+	.byte	0x5d
 	.4byte	0xe57
 	.uleb128 0x3
 	.byte	0x91
@@ -2246,7 +2246,7 @@ recording:
 	.uleb128 0x21
 	.string	"len"
 	.byte	0x1
-	.byte	0x5f
+	.byte	0x5e
 	.4byte	0xe57
 	.uleb128 0x3
 	.byte	0x91
@@ -2254,7 +2254,7 @@ recording:
 	.uleb128 0x20
 	.4byte	.LASF226
 	.byte	0x1
-	.byte	0x60
+	.byte	0x5f
 	.4byte	0x25
 	.4byte	.LLST9
 	.uleb128 0x22
@@ -3362,8 +3362,8 @@ recording:
 	.string	"P2IN"
 .LASF82:
 	.string	"UCB0I2COA"
-.LASF232:
-	.string	"piano.c"
+.LASF103:
+	.string	"short unsigned int"
 .LASF22:
 	.string	"P1OUT"
 .LASF168:
@@ -3372,8 +3372,6 @@ recording:
 	.string	"_signal_buf"
 .LASF166:
 	.string	"_asctime_buf"
-.LASF233:
-	.string	"/home/jonathan/Documents/PHYS319/lab3"
 .LASF197:
 	.string	"_result"
 .LASF110:
@@ -3382,6 +3380,8 @@ recording:
 	.string	"CALBC1_1MHZ"
 .LASF89:
 	.string	"CALDCO_8MHZ"
+.LASF232:
+	.string	"main.c"
 .LASF109:
 	.string	"wint_t"
 .LASF84:
@@ -3446,6 +3446,8 @@ recording:
 	.string	"__sdidinit"
 .LASF107:
 	.string	"_off_t"
+.LASF233:
+	.string	"/home/jonathan/Documents/PHYS319/playback"
 .LASF41:
 	.string	"P3DIR"
 .LASF70:
@@ -3564,8 +3566,6 @@ recording:
 	.string	"_fntypes"
 .LASF201:
 	.string	"_misc_reent"
-.LASF103:
-	.string	"short unsigned int"
 .LASF200:
 	.string	"_freelist"
 .LASF194:
