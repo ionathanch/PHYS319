@@ -27,6 +27,7 @@
 #define CSINT 6         // centiseconds storable in int of microseconds
 #define USINT 60000     // CSINT in microseconds
 
+#define DUTY  250
 #define DELAY 1000      // input sample delay in microseconds
 #define MAXNOTES 64     // record at most 64 notes (arbitrary)
 
@@ -49,7 +50,7 @@ unsigned int whole[8] = {
 
 void play(unsigned int note) {
     CCR0 = note;
-    CCR1 = note == n ? 0 : 250;
+    CCR1 = note == n ? 0 : DUTY;
 }
 
 void playback() {
@@ -97,6 +98,7 @@ void main(void) {
 
     __enable_interrupt();
     record();
+    __bis_SR_register(LPM0_bits);
 }
 
 #if defined(__TI_COMPILER_VERSION__)
