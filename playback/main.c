@@ -23,15 +23,20 @@
 
 // CSINT should be 256^2 / 10 000 = 65 536 / 10 000 = 6
 // USINT should be 60 000
-#define CSUS  10000     // CSUS microseconds (us) in a centisecond (cs)
+#define CSUS  10000     // microseconds (us) in a centisecond (cs)
 #define CSINT 6         // centiseconds storable in int of microseconds
 #define USINT 60000     // CSINT in microseconds
 
+#define DELAY 1000      // input sample delay in microseconds
 #define MAXNOTES 64     // record at most 64 notes (arbitrary)
 
+unsigned int rec[MAXNOTES]; // notes recorded
+unsigned int len[MAXNOTES]; // length of each note in centiseconds
+
 volatile bool recording = true;
-volatile unsigned int us = 0;
-volatile unsigned int cs = 0;
+volatile unsigned int notes = 1;
+volatile unsigned int us    = 0;
+volatile unsigned int cs    = 0;
 
 unsigned int scale[13] = {
     c, dflat, d, eflat, e, f, gflat, g, aflat, a, bflat, b, cc
@@ -46,33 +51,35 @@ void play(unsigned int note) {
     CCR1 = note == n ? 0 : 100;
 }
 
-void sing(unsigned int* song, unsigned int* lengths, unsigned int length) {
-    for (int i = 0; i < length; i++) {
-        play(song[i]);
-        for (int j = 0; j < lengths[i]; j++) {
+void playback() {
+    for (unsigned int i = 0; i < notes; i++) {
+        play(rec[i]);
+        for (unsigned int j = 0; j < len[i]; j++) {
             __delay_cycles(CSUS);
         }
     }
 }
 
-unsigned int record(unsigned int* song, unsigned int* lengths) {
-    unsigned int pos = 1;
+void save_length(unsigned int position) {
+    len[position] = cs + (us + TAR)/CSUS;
+    cs = us = TAR = 0;  // reset all counts
+}
+
+void record() {
     unsigned int note;
     TAR = 0;
     P1OUT |= LED1;
-    while (recording) {
-        note = whole[P2IN & 0xF];
-        if (note != song[pos - 1]) {
-            lengths[pos - 1] = cs + (us + TAR)/CSUS;
-            song[pos] = note;
+    while (recording && notes < MAXNOTES) {
+        note = whole[P2IN & 0xF];   // depends on how input works
+        if (note != rec[notes - 1]) {
+            save_length(notes - 1);
+            rec[notes] = note;
             play(note);
-            cs = us = TAR = 0;
-            pos++;
+            notes++;
         }
-        __delay_cycles(0x200);
+        __delay_cycles(DELAY);
     }
     P1OUT &= ~LED1;
-    return pos;
 }
 
 void main(void) {
@@ -89,11 +96,8 @@ void main(void) {
     TACCTL0 = CCIE;                 // enable clock  interrupt
 
     __enable_interrupt();
-    
-    unsigned int rec[MAXNOTES];
-    unsigned int len[MAXNOTES];
-    unsigned int length = record(rec, len);
-    sing(rec, len, length);
+    record();
+    playback();
 }
 
 #if defined(__TI_COMPILER_VERSION__)
@@ -105,10 +109,10 @@ __interrupt void timer0_a0_isr(void)
 {
     unsigned int us_left = USINT - us;  // count up to USINT microseconds in us
     if (us_left < TACCR0) {
-        cs += CSINT;            // add centiseconds to count
+        cs += CSINT;            // add centiseconds to cs count
         us = TACCR0 - us_left;  // save overflow
     } else {
-        us += TACCR0;
+        us += TACCR0;           // add microseconds to us count
     }
     TACCTL0 &= ~CCIFG;          // set interrupt flag to 0
 }
@@ -120,8 +124,9 @@ __interrupt void port1_isr(void)
   void __attribute__ ((interrupt(PORT1_VECTOR))) port1_isr (void)
 #endif
 {
+    save_length(notes);         // save length of current note
+    TACCTL0  &= ~CCIE;          // disable interrupts for clock
+    P1IE     &= ~BIT3;          // disable interrupts for button
+    P1IFG    &= ~BIT3;          // set interrupt flag to 0
     recording = false;          // stop recording
-    P1OUT ^=  BIT0;
-    P1IFG &= ~BIT3;             // set interrupt flag to 0
-    P1IE  &= ~BIT3;             // disable interrupts for button
 }
