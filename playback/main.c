@@ -30,6 +30,7 @@
 #define DELAY 1000      // input sample delay in microseconds
 #define MAXNOTES 64     // record at most 64 notes (arbitrary)
 
+// max length of note is 0xFFFF centiseconds = approx. 10 minutes
 unsigned int rec[MAXNOTES]; // notes recorded
 unsigned int len[MAXNOTES]; // length of each note in centiseconds
 
@@ -48,7 +49,7 @@ unsigned int whole[8] = {
 
 void play(unsigned int note) {
     CCR0 = note;
-    CCR1 = note == n ? 0 : 100;
+    CCR1 = note == n ? 0 : 250;
 }
 
 void playback() {
@@ -79,7 +80,6 @@ void record() {
         }
         __delay_cycles(DELAY);
     }
-    P1OUT &= ~LED1;
 }
 
 void main(void) {
@@ -97,7 +97,6 @@ void main(void) {
 
     __enable_interrupt();
     record();
-    playback();
 }
 
 #if defined(__TI_COMPILER_VERSION__)
@@ -123,10 +122,13 @@ __interrupt void port1_isr(void)
 #else
   void __attribute__ ((interrupt(PORT1_VECTOR))) port1_isr (void)
 #endif
-{
-    save_length(notes);         // save length of current note
-    TACCTL0  &= ~CCIE;          // disable interrupts for clock
-    P1IE     &= ~BIT3;          // disable interrupts for button
-    P1IFG    &= ~BIT3;          // set interrupt flag to 0
-    recording = false;          // stop recording
+{    
+    if (recording) {
+        save_length(notes);
+        recording = false;
+        P1OUT    &= ~LED1;
+        TACCTL0  &= ~CCIE;     // disable interrupts for clock
+    }
+    playback();
+    P1IFG &= ~BUTTON;          // set interrupt flag to 0
 }
