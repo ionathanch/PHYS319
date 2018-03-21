@@ -40,8 +40,8 @@ volatile unsigned int notes = 1;
 volatile unsigned int us    = 0;
 volatile unsigned int cs    = 0;
 
-unsigned int scale[13] = {
-    c, dflat, d, eflat, e, f, gflat, g, aflat, a, bflat, b, cc
+unsigned int scale[16] = {
+    c, dflat, d, eflat, e, f, gflat, g, aflat, a, bflat, b, cc, c, dflat, eflat
 };
 
 unsigned int whole[8] = {
@@ -72,7 +72,7 @@ void record() {
     TAR = 0;
     P1OUT |= LED1;
     while (recording && notes < MAXNOTES) {
-        note = whole[P2IN & 0xF];   // depends on how input works
+        note = scale[P2IN & 0xF];
         if (note != rec[notes - 1]) {
             save_length(notes - 1);
             rec[notes] = note;
@@ -87,9 +87,11 @@ void main(void) {
     WDTCTL  = WDTPW + WDTHOLD;      // Stop WDT
 
     P2DIR   = 0;                    // P2 all input
+    P2REN   = 0xF;                  // P2 inputs resistor enable
+    P2OUT   = 0;                    // P2 resistor pulldown
     P1DIR   = OUTPUT | LED1;        // P1.6, P1.0 output (P1.3 input)
     P1SEL  |= OUTPUT;               // P1.6 to TA0.1
-    P1REN   = BUTTON;               // button resistor pullup/pulldown
+    P1REN   = BUTTON;               // button resistor enable
     P1IE    = BUTTON;               // enable button interrupt
 
     CCTL1   = OUTMOD_7;             // CCR1 reset/set
