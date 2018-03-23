@@ -29,7 +29,7 @@
 
 #define DUTY  250
 #define DELAY 1000      // input sample delay in microseconds
-#define MAXNOTES 64     // record at most 64 notes (arbitrary)
+#define MAXNOTES 0x40   // record at most 64 notes (arbitrary)
 
 // max length of note is 0xFFFF centiseconds = approx. 10 minutes
 unsigned int rec[MAXNOTES]; // notes recorded
@@ -41,7 +41,7 @@ volatile unsigned int us    = 0;
 volatile unsigned int cs    = 0;
 
 unsigned int scale[16] = {
-    c, dflat, d, eflat, e, f, gflat, g, aflat, a, bflat, b, cc, c, dflat, eflat
+    n, c, dflat, d, eflat, e, f, gflat, g, aflat, a, bflat, b, cc, n, n
 };
 
 unsigned int whole[8] = {
@@ -49,8 +49,13 @@ unsigned int whole[8] = {
 };
 
 void play(unsigned int note) {
-    CCR0 = note;
-    CCR1 = note == n ? 0 : DUTY;
+    if (note != n) {
+        CCR0 = note;
+        CCR1 = DUTY;
+    } else {
+        CCR0 = 0xFFFF;  // cannot count to 0; set to max
+        CCR1 = 0;
+    }
 }
 
 void playback() {
