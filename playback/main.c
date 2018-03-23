@@ -27,9 +27,7 @@
 #define CSINT 6         // centiseconds storable in int of microseconds
 #define USINT 60000     // CSINT in microseconds
 
-#define DUTY  250
-#define DELAY 1000      // input sample delay in microseconds
-#define MAXNOTES 0x40   // record at most 64 notes (arbitrary)
+#define MAXNOTES 0x4D   // not enough RAM to allocate any more to rec, len :(
 
 // max length of note is 0xFFFF centiseconds = approx. 10 minutes
 unsigned int rec[MAXNOTES]; // notes recorded
@@ -51,7 +49,7 @@ unsigned int whole[8] = {
 void play(unsigned int note) {
     if (note != n) {
         CCR0 = note;
-        CCR1 = DUTY;
+        CCR1 = 250;
     } else {
         CCR0 = 0xFFFF;  // cannot count to 0; set to max
         CCR1 = 0;
@@ -72,6 +70,12 @@ void save_length(unsigned int position) {
     cs = us = TAR = 0;  // reset all counts
 }
 
+void end_record() {
+    P1OUT   &= ~LED1;
+    TACCTL0 &= ~CCIE;
+    play(n);
+}
+
 void record() {
     unsigned int note;
     TAR = 0;
@@ -84,8 +88,9 @@ void record() {
             play(note);
             notes++;
         }
-        __delay_cycles(DELAY);
+        __delay_cycles(1000);
     }
+    end_record();
 }
 
 void main(void) {
@@ -135,8 +140,7 @@ __interrupt void port1_isr(void)
     if (recording) {
         save_length(notes);
         recording = false;
-        P1OUT    &= ~LED1;
-        TACCTL0  &= ~CCIE;     // disable interrupts for clock
+        end_record();
     }
     playback();
     P1IFG &= ~BUTTON;          // set interrupt flag to 0
