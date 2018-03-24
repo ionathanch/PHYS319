@@ -2,54 +2,57 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define c     3822
-#define dflat 3608
-#define d     3405
-#define eflat 3214
-#define e     3034
-#define f     2863
-#define gflat 2703
-#define g     2551
-#define aflat 2408
-#define a     2273
-#define bflat 2145
-#define b     2025
-#define cc    1911
-#define n     0
+#define MIDC   3822
+#define DFLAT  3608
+#define D      3405
+#define EFLAT  3214
+#define E      3034
+#define F      2863
+#define GFLAT  2703
+#define G      2551
+#define AFLAT  2408
+#define A      2273
+#define BFLAT  2145
+#define B      2025
+#define TENC   1911
+#define NONE   0
 
 #define LED1   BIT0
 #define BUTTON BIT3
 #define OUTPUT BIT6
 
+// constants used for unit conversions in timer interrupt
 // CSINT should be 256^2 / 10 000 = 65 536 / 10 000 = 6
 // USINT should be 60 000
-#define CSUS  10000     // microseconds (us) in a centisecond (cs)
-#define CSINT 6         // centiseconds storable in int of microseconds
-#define USINT 60000     // CSINT in microseconds
+#define CSUS   10000    // microseconds (us) in a centisecond (cs)
+#define CSINT  6        // centiseconds storable in int of microseconds
+#define USINT  60000    // CSINT in microseconds
 
-#define MAXNOTES 0x4D   // not enough RAM to allocate any more to rec, len :(
+#define MAXNOTES 0xA2   // 162 (not enough RAM to allocate any more to rec)
 
-// max length of note is 0xFFFF centiseconds = approx. 10 minutes
-unsigned int rec[MAXNOTES]; // notes recorded
-unsigned int len[MAXNOTES]; // length of each note in centiseconds
+// pitch is index of scale array
+// max length of note is 0xFFF = approx. 41 seconds
+typedef struct {
+    unsigned int pitch  : 4;
+    unsigned int length : 12;
+} Note;
 
+unsigned int scale[16] = {
+    NONE,  MIDC, DFLAT, D, EFLAT, E, F, 
+    GFLAT, G,    AFLAT, A, BFLAT, B, TENC,
+    NONE,  NONE  // should not be used
+};
+
+Note rec[MAXNOTES];
 volatile bool recording = true;
 volatile unsigned int notes = 1;
 volatile unsigned int us    = 0;
 volatile unsigned int cs    = 0;
 
-unsigned int scale[16] = {
-    n, c, dflat, d, eflat, e, f, gflat, g, aflat, a, bflat, b, cc, n, n
-};
-
-unsigned int whole[8] = {
-    c, d, e, f, g, a, b, cc
-};
-
-void play(unsigned int note) {
-    if (note != n) {
-        CCR0 = note;
-        CCR1 = 250;
+void play(unsigned int pitch) {
+    if (pitch != 0) {
+        CCR0 = scale[pitch];
+        CCR1 = scale[pitch] / 2;  // max volume
     } else {
         CCR0 = 0xFFFF;  // cannot count to 0; set to max
         CCR1 = 0;
@@ -58,34 +61,34 @@ void play(unsigned int note) {
 
 void playback() {
     for (unsigned int i = 0; i < notes; i++) {
-        play(rec[i]);
-        for (unsigned int j = 0; j < len[i]; j++) {
+        play(rec[i].pitch);
+        for (unsigned int j = 0; j < rec[i].length; j++) {
             __delay_cycles(CSUS);
         }
     }
 }
 
 void save_length(unsigned int position) {
-    len[position] = cs + (us + TAR)/CSUS;
+    rec[position].length = cs + (us + TAR)/CSUS;
     cs = us = TAR = 0;  // reset all counts
 }
 
 void end_record() {
-    P1OUT   &= ~LED1;
-    TACCTL0 &= ~CCIE;
-    play(n);
+    recording = false;
+    P1OUT    &= ~LED1;
+    TACCTL0  &= ~CCIE;
+    play(0);
 }
 
 void record() {
-    unsigned int note;
     TAR = 0;
     P1OUT |= LED1;
     while (recording && notes < MAXNOTES) {
-        note = scale[P2IN & 0xF];
-        if (note != rec[notes - 1]) {
+        unsigned int pitch = P2IN & 0xF;
+        if (pitch != rec[notes - 1].pitch) {
             save_length(notes - 1);
-            rec[notes] = note;
-            play(note);
+            rec[notes].pitch = pitch;
+            play(pitch);
             notes++;
         }
         __delay_cycles(1000);
@@ -139,9 +142,8 @@ __interrupt void port1_isr(void)
 {    
     if (recording) {
         save_length(notes);
-        recording = false;
         end_record();
     }
     playback();
-    P1IFG &= ~BUTTON;          // set interrupt flag to 0
+    P1IFG &= ~BUTTON;           // set interrupt flag to 0
 }
