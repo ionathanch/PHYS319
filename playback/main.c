@@ -30,7 +30,8 @@
 
 #define MAXNOTES 0xA2   // 162 (not enough RAM to allocate any more to rec)
 
-// pitch is index of scale array
+// pitch  is index of scale array
+// length is in centiseconds
 // max length of note is 0xFFF = approx. 41 seconds
 typedef struct {
     unsigned int pitch  : 4;
