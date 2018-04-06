@@ -4,3 +4,4 @@
 **/*.aux
 **/.vscode
 **/_minted*
+**/*.out
